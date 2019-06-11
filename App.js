@@ -39,8 +39,6 @@ var fs = require("fs");
 var Tag_1 = require("./Tag");
 var Prop_1 = require("./Prop");
 var TagDelimiterEnum_1 = require("./TagDelimiterEnum");
-//TODO: Lidar com props que tenham espaços
-//TODO: Lidar com diretivas do vue-js
 var Parser = /** @class */ (function () {
     function Parser(fileName) {
         this.fileName = fileName;
@@ -112,8 +110,6 @@ var Parser = /** @class */ (function () {
                                 case 1:
                                     isClosingTag = _a.sent();
                                     if (isClosingTag) {
-                                        console.log("Fecho");
-                                        console.log(tagName);
                                         this.currentLevel--;
                                         return [2 /*return*/, resolve()];
                                     }
@@ -137,7 +133,7 @@ var Parser = /** @class */ (function () {
                                     return [3 /*break*/, 7];
                                 case 6:
                                     error_1 = _a.sent();
-                                    console.log("Erro nas tags");
+                                    console.log("Tag Error");
                                     console.log(error_1);
                                     return [3 /*break*/, 7];
                                 case 7:
@@ -181,12 +177,13 @@ var Parser = /** @class */ (function () {
     };
     Parser.prototype.getPropValue = function (buffer, index) {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
             return __generator(this, function (_a) {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         var propValue = '';
+                        var closingChar = buffer[index];
+                        index++;
                         for (; index < buffer.length; index++) {
-                            if (_this.isWhiteSpace(buffer[index])) {
+                            if (buffer[index] === closingChar) {
                                 return resolve(propValue);
                             }
                             propValue += buffer[index];

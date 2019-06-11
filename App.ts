@@ -4,9 +4,6 @@ import {Tag} from './Tag'
 import {Prop} from './Prop'
 import {TagDelimiterEnum} from './TagDelimiterEnum';
 
-//TODO: Lidar com props que tenham espaços
-//TODO: Lidar com diretivas do vue-js
-
 class Parser {
   fileName : string;
   fileContent : string;
@@ -72,8 +69,6 @@ class Parser {
       let isClosingTag : boolean = await this.isClosingTag(tagName)
 
       if(isClosingTag) {
-        console.log("Fecho")
-        console.log(tagName)
         this.currentLevel--;
         return resolve();
       }
@@ -93,7 +88,7 @@ class Parser {
             index += propValue.length;
 
           } catch (error) {
-            console.log("Erro nas tags")
+            console.log("Tag Error")
             console.log(error)
           }
         }
@@ -132,8 +127,10 @@ class Parser {
   private async getPropValue(buffer : string[], index: number) : Promise<string> {
     return new Promise((resolve, reject) => {
       let propValue : string = '';
+      let closingChar : string = buffer[index]
+      index++
       for (; index < buffer.length; index ++) {
-        if (this.isWhiteSpace(buffer[index])) {
+        if (buffer[index] === closingChar) {
           return resolve(propValue)
         }
         propValue += buffer[index]
