@@ -18,7 +18,7 @@
                   class="nav-link"
                   active-class="active"
                 >
-                  Your Feed
+                  {{Your Feed}}
                 </router-link>
               </li>
               <li class="nav-item">
@@ -28,7 +28,7 @@
                   class="nav-link"
                   active-class="active"
                 >
-                  Global Feed
+                  {{num == 3 ? par : impar}}
                 </router-link>
               </li>
               <li class="nav-item" v-if="tag">
@@ -44,10 +44,10 @@
           </div>
           <router-view></router-view>
         </div>
-        <div class="col-md-3">
-          <div class="sidebar">
-            <p>Popular Tags</p>
-            <div class="tag-list">
+        <div class="col-md-3" v-if="2">
+          <div class="sidebar" v-if="2">
+            <p v-if="2">Popular Tags</p>
+            <div class="tag-list" v-if="2">
               <RwvTag v-for="(tag, index) in tags" :name="tag" :key="index">
               </RwvTag>
             </div>
@@ -67,6 +67,27 @@ export default {
   name: "home",
   components: {
     RwvTag
+  },
+  data: function() {
+    return {
+      count : 0,
+      nome: "Eduardo",
+      coisas: ["Coisa1", 2],
+      count : 0,
+      nome: "Eduardo",
+      coisas: ["Coisa1", 2],
+      count : 0,
+      nome: "Eduardo",
+      coisas: ["Coisa1", 2],
+      count : 0,
+      nome: "Eduardo",
+      coisas: ["Coisa1", 2],
+    }
+  },
+  props: {
+    pp : ['tile'],
+
+    pp : String,
   },
   mounted() {
     this.$store.dispatch(FETCH_TAGS);

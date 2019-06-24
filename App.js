@@ -35,184 +35,46 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var fs = require("fs");
-var Tag_1 = require("./Tag");
-var Prop_1 = require("./Prop");
-var TagDelimiterEnum_1 = require("./TagDelimiterEnum");
-var Parser = /** @class */ (function () {
-    function Parser(fileName) {
-        this.fileName = fileName;
-        this.fileContent = fs.readFileSync(this.fileName, 'utf-8');
-        this.tags = [];
-        this.currentLevel = 0;
+var Parser_1 = require("./Parser");
+var Judge_1 = require("./Judge");
+var App = /** @class */ (function () {
+    function App() {
     }
-    Parser.prototype.run = function () {
+    App.prototype.runParsers = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var fileContent, tagBuffer, allowAddInBuffer, firstTag, i, currentChar;
+            var p, tag, templateStrings, getVueObjects, j;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        fileContent = this.fileContent;
-                        tagBuffer = [];
-                        allowAddInBuffer = false;
-                        i = 0;
-                        _a.label = 1;
+                        p = new Parser_1.Parser("./Home.vue");
+                        return [4 /*yield*/, p.runHTML()];
                     case 1:
-                        if (!(i < fileContent.length)) return [3 /*break*/, 5];
-                        currentChar = fileContent[i];
-                        if (currentChar === TagDelimiterEnum_1.TagDelimiterEnum.TAG_START) {
-                            allowAddInBuffer = true;
-                            return [3 /*break*/, 4];
-                        }
-                        if (!(currentChar === TagDelimiterEnum_1.TagDelimiterEnum.TAG_END)) return [3 /*break*/, 3];
-                        return [4 /*yield*/, this.bufferHandler(tagBuffer)];
+                        _a.sent();
+                        return [4 /*yield*/, p.runScript()];
                     case 2:
                         _a.sent();
-                        allowAddInBuffer = false;
-                        tagBuffer = [];
-                        _a.label = 3;
+                        tag = p.getTags();
+                        templateStrings = p.getTemplateSyntax();
+                        getVueObjects = p.getVueObjects();
+                        j = new Judge_1.Judge(tag, templateStrings, getVueObjects);
+                        return [4 /*yield*/, j.evaluateLongData()];
                     case 3:
-                        if (allowAddInBuffer) {
-                            tagBuffer.push(currentChar);
-                        }
-                        if (this.tags.length > 0 && this.currentLevel === 0) {
-                            console.log("Quitting html parser");
-                            this.debug();
-                            return [2 /*return*/];
-                        }
-                        _a.label = 4;
+                        _a.sent();
+                        return [4 /*yield*/, j.evaluateComplexTemplateSyntax()];
                     case 4:
-                        i++;
-                        return [3 /*break*/, 1];
-                    case 5: return [2 /*return*/];
+                        _a.sent();
+                        return [4 /*yield*/, j.evaluateManyConditionalRendering()];
+                    case 5:
+                        _a.sent();
+                        return [4 /*yield*/, j.evaluatePropsWithoutDefinition()];
+                    case 6:
+                        _a.sent();
+                        return [2 /*return*/];
                 }
             });
         });
     };
-    Parser.prototype.bufferHandler = function (buffer) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
-                        var index, tagName, isClosingTag, tag, propName, propValue, prop, error_1;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    index = 0;
-                                    tagName = '';
-                                    for (; index < buffer.length; index++) {
-                                        if (this.isWhiteSpace(buffer[index])) {
-                                            break;
-                                        }
-                                        tagName += buffer[index];
-                                    }
-                                    return [4 /*yield*/, this.isClosingTag(tagName)];
-                                case 1:
-                                    isClosingTag = _a.sent();
-                                    if (isClosingTag) {
-                                        this.currentLevel--;
-                                        return [2 /*return*/, resolve()];
-                                    }
-                                    tag = new Tag_1.Tag(tagName, this.currentLevel);
-                                    _a.label = 2;
-                                case 2:
-                                    if (!(index < buffer.length)) return [3 /*break*/, 9];
-                                    if (!(buffer[index] === TagDelimiterEnum_1.TagDelimiterEnum.ASSIGN_OPERATOR)) return [3 /*break*/, 7];
-                                    _a.label = 3;
-                                case 3:
-                                    _a.trys.push([3, 6, , 7]);
-                                    return [4 /*yield*/, this.getPropName(buffer, index - 1)];
-                                case 4:
-                                    propName = _a.sent();
-                                    return [4 /*yield*/, this.getPropValue(buffer, index + 1)];
-                                case 5:
-                                    propValue = _a.sent();
-                                    prop = new Prop_1.Prop(propName, propValue);
-                                    tag.addProp(prop);
-                                    index += propValue.length;
-                                    return [3 /*break*/, 7];
-                                case 6:
-                                    error_1 = _a.sent();
-                                    console.log("Tag Error");
-                                    console.log(error_1);
-                                    return [3 /*break*/, 7];
-                                case 7:
-                                    if (buffer[index] === TagDelimiterEnum_1.TagDelimiterEnum.TAG_CLOSE) {
-                                        this.tags.push(tag);
-                                        return [2 /*return*/, resolve()];
-                                    }
-                                    _a.label = 8;
-                                case 8:
-                                    index++;
-                                    return [3 /*break*/, 2];
-                                case 9:
-                                    this.currentLevel++;
-                                    this.tags.push(tag);
-                                    return [2 /*return*/, resolve()];
-                            }
-                        });
-                    }); })];
-            });
-        });
-    };
-    Parser.prototype.isWhiteSpace = function (character) {
-        return /\s/.test(character);
-    };
-    Parser.prototype.getPropName = function (buffer, index) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var propName = '';
-                        for (; index > 0; index--) {
-                            if (_this.isWhiteSpace(buffer[index])) {
-                                return resolve(propName.split("").reverse().join(""));
-                            }
-                            propName += buffer[index];
-                        }
-                        return reject("");
-                    })];
-            });
-        });
-    };
-    Parser.prototype.getPropValue = function (buffer, index) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var propValue = '';
-                        var closingChar = buffer[index];
-                        index++;
-                        for (; index < buffer.length; index++) {
-                            if (buffer[index] === closingChar) {
-                                return resolve(propValue);
-                            }
-                            propValue += buffer[index];
-                        }
-                        return resolve(propValue);
-                    })];
-            });
-        });
-    };
-    Parser.prototype.isClosingTag = function (tagName) {
-        return new Promise(function (resolve, reject) {
-            var length = tagName.length;
-            var tagNameArray = tagName.split("");
-            for (var i = 0; i < length; i++) {
-                if (tagNameArray[i] === TagDelimiterEnum_1.TagDelimiterEnum.TAG_CLOSE) {
-                    return resolve(true);
-                }
-            }
-            return resolve(false);
-        });
-    };
-    Parser.prototype.debug = function () {
-        // console.log(this.fileName)
-        // console.log(this.fileContent)
-        this.tags.forEach(function (tag) {
-            console.log(tag);
-        });
-    };
-    return Parser;
+    return App;
 }());
-var p = new Parser("./Home.vue");
-p.run();
+var app = new App();
+app.runParsers();
