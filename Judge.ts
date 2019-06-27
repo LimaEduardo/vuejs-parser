@@ -9,7 +9,7 @@ class Judge {
   templateStrings : Array<TemplateString>
   vueObjects : Array<VueObject>
 
-  MAX_NUMBER_OF_DATA_OBJECTS : number = 10
+  MAX_NUMBER_OF_DATA_OBJECTS : number = 6
   MAX_NUMBER_OF_CONDITIONAL_RENDERING : number = 5
 
   constructor(tags : Array<Tag>, templateStrings : Array<TemplateString>, vueObjects : Array<VueObject>) {
@@ -99,7 +99,10 @@ class Judge {
       let smellFound : boolean = false
 
       for(var i : number = 0; i < propsObject.attributes.length; i++) {
-        const {value} = propsObject.attributes[i]
+        console.log("ae")
+        const value = propsObject.attributes[i].value
+
+        console.log(value)
 
         if (!value.includes("String")
         && !value.includes("Number") 
@@ -113,15 +116,23 @@ class Judge {
           console.log("Props Without Definition encontrado!")
           smellFound = true
         }
+
+        if (value == undefined) {
+          console.log("Props Without Definition encontrado!")
+          smellFound = true
+        }
       }
 
       if (!smellFound) {
-      console.log("Limpo de Props Without Definition")
+        console.log("Limpo de Props Without Definition")
+        return Promise.resolve(false)
       }
+
+      return Promise.resolve(true)
       
     } catch(e) {
       console.log(e)
-      return Promise.resolve(false)
+      return Promise.resolve(true)
     }
   }
   

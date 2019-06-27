@@ -173,7 +173,8 @@ class Parser {
         } 
 
         var attrName: string = await this.getAttrName(buffer, i)
-        var attrValue : string= await this.getAttrValue(buffer,i)
+        var attrValue : string = await this.getAttrValue(buffer,i)
+
 
         var attr : Attribute = new Attribute(attrName, attrValue)
 
@@ -213,7 +214,7 @@ class Parser {
   }
 
   private async getAttrValue(buffer: string[], index: number) : Promise<any> {
-    var attrName : string[] = []
+    var attrValue : string[] = []
     var shouldIgnoreDelimeters : boolean = false
     var level : number = 0
     for (var i : number = index+1; i < buffer.length; i++) {
@@ -232,10 +233,10 @@ class Parser {
       }
 
       if ((currentChar === TagDelimiterEnum.COMMA || currentChar == TagDelimiterEnum.END_BRACES) && !shouldIgnoreDelimeters) {
-          let attrNameString = attrName.join("").trim()
-          return Promise.resolve(attrNameString)
+          let attrValueString : string = attrValue.join("").trim()
+          return Promise.resolve(attrValueString)
       }
-      attrName.push(currentChar)
+      attrValue.push(currentChar)
     }
   }
 

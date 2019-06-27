@@ -265,9 +265,9 @@ var Parser = /** @class */ (function () {
     };
     Parser.prototype.getAttrValue = function (buffer, index) {
         return __awaiter(this, void 0, void 0, function () {
-            var attrName, shouldIgnoreDelimeters, level, i, currentChar, attrNameString;
+            var attrValue, shouldIgnoreDelimeters, level, i, currentChar, attrValueString;
             return __generator(this, function (_a) {
-                attrName = [];
+                attrValue = [];
                 shouldIgnoreDelimeters = false;
                 level = 0;
                 for (i = index + 1; i < buffer.length; i++) {
@@ -283,10 +283,10 @@ var Parser = /** @class */ (function () {
                         }
                     }
                     if ((currentChar === TagDelimiterEnum_1.TagDelimiterEnum.COMMA || currentChar == TagDelimiterEnum_1.TagDelimiterEnum.END_BRACES) && !shouldIgnoreDelimeters) {
-                        attrNameString = attrName.join("").trim();
-                        return [2 /*return*/, Promise.resolve(attrNameString)];
+                        attrValueString = attrValue.join("").trim();
+                        return [2 /*return*/, Promise.resolve(attrValueString)];
                     }
-                    attrName.push(currentChar);
+                    attrValue.push(currentChar);
                 }
                 return [2 /*return*/];
             });

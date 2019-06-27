@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var Judge = /** @class */ (function () {
     function Judge(tags, templateStrings, vueObjects) {
-        this.MAX_NUMBER_OF_DATA_OBJECTS = 10;
+        this.MAX_NUMBER_OF_DATA_OBJECTS = 6;
         this.MAX_NUMBER_OF_CONDITIONAL_RENDERING = 5;
         this.tags = tags;
         this.templateStrings = templateStrings;
@@ -145,7 +145,9 @@ var Judge = /** @class */ (function () {
                         propsObject = _a.sent();
                         smellFound = false;
                         for (i = 0; i < propsObject.attributes.length; i++) {
+                            console.log("ae");
                             value = propsObject.attributes[i].value;
+                            console.log(value);
                             if (!value.includes("String")
                                 && !value.includes("Number")
                                 && !value.includes("Boolean")
@@ -158,15 +160,20 @@ var Judge = /** @class */ (function () {
                                 console.log("Props Without Definition encontrado!");
                                 smellFound = true;
                             }
+                            if (value == undefined) {
+                                console.log("Props Without Definition encontrado!");
+                                smellFound = true;
+                            }
                         }
                         if (!smellFound) {
                             console.log("Limpo de Props Without Definition");
+                            return [2 /*return*/, Promise.resolve(false)];
                         }
-                        return [3 /*break*/, 3];
+                        return [2 /*return*/, Promise.resolve(true)];
                     case 2:
                         e_2 = _a.sent();
                         console.log(e_2);
-                        return [2 /*return*/, Promise.resolve(false)];
+                        return [2 /*return*/, Promise.resolve(true)];
                     case 3: return [2 /*return*/];
                 }
             });

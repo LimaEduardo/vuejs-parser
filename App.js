@@ -37,16 +37,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var Parser_1 = require("./Parser");
 var Judge_1 = require("./Judge");
+var fs = require("fs");
 var App = /** @class */ (function () {
     function App() {
+        this.results = [];
+        this.testFolder = './';
     }
-    App.prototype.runParsers = function () {
+    App.prototype.runParser = function (filename) {
         return __awaiter(this, void 0, void 0, function () {
-            var p, tag, templateStrings, getVueObjects, j;
+            var filePath, p, tag, templateStrings, getVueObjects, j, evaluateLongData, evaluateComplexTemplateSyntax, evaluateConditionalRendering, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        p = new Parser_1.Parser("./Home.vue");
+                        filePath = this.testFolder + filename;
+                        p = new Parser_1.Parser(filePath);
                         return [4 /*yield*/, p.runHTML()];
                     case 1:
                         _a.sent();
@@ -55,26 +59,113 @@ var App = /** @class */ (function () {
                         _a.sent();
                         tag = p.getTags();
                         templateStrings = p.getTemplateSyntax();
+                        console.log(templateStrings);
                         getVueObjects = p.getVueObjects();
                         j = new Judge_1.Judge(tag, templateStrings, getVueObjects);
                         return [4 /*yield*/, j.evaluateLongData()];
                     case 3:
-                        _a.sent();
+                        evaluateLongData = _a.sent();
                         return [4 /*yield*/, j.evaluateComplexTemplateSyntax()];
                     case 4:
+                        evaluateComplexTemplateSyntax = _a.sent();
+                        return [4 /*yield*/, j.evaluateManyConditionalRendering()
+                            // var evaluatePropsWithoutDefinition =  await j.evaluatePropsWithoutDefinition()
+                        ];
+                    case 5:
+                        evaluateConditionalRendering = _a.sent();
+                        result = {
+                            fileName: filename,
+                            evaluateLongData: evaluateLongData,
+                            evaluateComplexTemplateSyntax: evaluateComplexTemplateSyntax,
+                            evaluateConditionalRendering: evaluateConditionalRendering
+                        };
+                        this.results.push(result);
+                        // console.log(result)
+                        return [2 /*return*/, Promise.resolve()];
+                }
+            });
+        });
+    };
+    App.prototype.writeResults = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var jsonobj;
+            return __generator(this, function (_a) {
+                jsonobj = JSON.stringify(this.results);
+                fs.writeFile("./results.json", jsonobj, function (err) {
+                    if (err) {
+                        return console.log(err);
+                    }
+                    console.log("The file was saved!");
+                });
+                return [2 /*return*/, Promise.resolve()];
+            });
+        });
+    };
+    App.prototype.runTests = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var folderFiles, i;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        folderFiles = fs.readdirSync(this.testFolder);
+                        i = 0;
+                        _a.label = 1;
+                    case 1:
+                        if (!(i < folderFiles.length)) return [3 /*break*/, 4];
+                        return [4 /*yield*/, this.runParser(folderFiles[i])];
+                    case 2:
                         _a.sent();
-                        return [4 /*yield*/, j.evaluateManyConditionalRendering()];
+                        _a.label = 3;
+                    case 3:
+                        i++;
+                        return [3 /*break*/, 1];
+                    case 4:
+                        console.log("vai escrever");
+                        return [4 /*yield*/, this.writeResults()];
                     case 5:
                         _a.sent();
-                        return [4 /*yield*/, j.evaluatePropsWithoutDefinition()];
+                        return [4 /*yield*/, this.evaluateResults()];
                     case 6:
                         _a.sent();
-                        return [2 /*return*/];
+                        return [2 /*return*/, Promise.resolve()];
                 }
+            });
+        });
+    };
+    App.prototype.evaluateResults = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var counter, i, jsonobj;
+            return __generator(this, function (_a) {
+                counter = {
+                    evaluateLongData: 0,
+                    evaluateComplexTemplateSyntax: 0,
+                    evaluateConditionalRendering: 0,
+                    evaluatePropsWithoutDefinition: 0
+                };
+                for (i = 0; i < this.results.length; i++) {
+                    if (this.results[i]['evaluateLongData'] === true) {
+                        counter.evaluateLongData++;
+                    }
+                    if (this.results[i]['evaluateComplexTemplateSyntax'] === true) {
+                        counter.evaluateComplexTemplateSyntax++;
+                    }
+                    if (this.results[i]['evaluateConditionalRendering'] === true) {
+                        counter.evaluateConditionalRendering++;
+                    }
+                }
+                jsonobj = JSON.stringify(counter);
+                fs.writeFile("./numbers.json", jsonobj, function (err) {
+                    if (err) {
+                        return console.log(err);
+                    }
+                    console.log("The file was saved!");
+                });
+                return [2 /*return*/, Promise.resolve()];
             });
         });
     };
     return App;
 }());
 var app = new App();
-app.runParsers();
+app.runParser("Home.vue");
+// app.runTests()
